@@ -66,7 +66,7 @@
                 <div id="review-box" data-id="{{ $product->id }}">
                     <textarea id="review-content" rows="5"></textarea>
                     <div class="d-flex align-items-center">
-                        @if(isset($_COOKIE['name']))
+                        @if(isset($_COOKIE['name']) && !empty($_COOKIE['name']))
                         <a href="javascript:void(0)" id="change-info" class="btn btn-primary me-1">change info</a>
                         @endif
                         <button>Send</button>
@@ -145,27 +145,9 @@
                             <label class="form-label">Phone number*</label>
                             <input type="text" class="form-control" name="phone_number">
                         </div>
-                        <button type="submit" class="btn btn-primary">Send</button>
+                        <button type="submit" id="send-info" class="btn btn-primary">Send</button>
                     </form>
                 </div>
-            </div>
-            <div id="related-products">
-                <!-- <div class="products">
-                    <div class="product">
-                        <div class="img">
-                            <a href="#">
-                                <img src="{{asset('images/product-7-270x270.png')}}" alt="">
-                            </a>
-                        </div>
-                        <p class="price">$100</p>
-                        <p class="name">
-                            <a href="#">Sound Bar with Wireless Subwoofe</a>
-                        </p>
-                        <div class="cart">
-                            <span class="lnr lnr-cart"></span>
-                        </div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </main>

@@ -123,6 +123,8 @@ $("#add-btn").click(function () {
 });
 /*---------------- review ------------------*/
 $("#review-box button").click(function () {
+    $(".inputchildreply").remove();
+    $(".inputreply form").css("display", "none");
     if ($("#review-box #review-content").val() == "") {
         if (!$("#review-box p").length) {
             $("#review-box #review-content").after(
@@ -193,35 +195,20 @@ $("#user-info form").validate({
 
 $("#user-info form button").click(function (event) {
     event.preventDefault();
-    let product_id = $("#review-box").data("id");
-    let name = $("#user-info input[name='name']").val();
-    let email = $("#user-info input[name='email']").val();
-    let phone_number = $("#user-info input[name='phone_number']").val();
-    setCookie("name", name, 1);
-    setCookie("email", email, 1);
-    setCookie("phone", phone_number, 1);
-    let content = $("#review-content").val();
-    if ($("#user-info form").valid()) {
-        $.ajax({
-            url: "http://127.0.0.1:8000/review/add",
-            method: "get",
-            data: {
-                product_id: product_id,
-                content: content,
-            },
-            success: function (data) {
-                $("#user-info form").trigger("reset");
-                $("#user-info").css("display", "none");
-                $("#review-box textarea").val("");
-                $("#review-container").prepend(data);
-                $("#review-box button").before(
-                    '<a href="javascript:void(0)" id="change-info" class="btn btn-primary me-1">change info</a>'
-                );
-            },
-            error: function (message) {
-                console.log(message);
-            },
-        });
+    if ($(this).attr("id") == "send-info") {
+        let name = $("#user-info input[name='name']").val();
+        let email = $("#user-info input[name='email']").val();
+        let phone_number = $("#user-info input[name='phone_number']").val();
+        setCookie("name", name, 1);
+        setCookie("email", email, 1);
+        setCookie("phone", phone_number, 1);
+        if ($("#user-info form").valid()) {
+            $("#user-info form").trigger("reset");
+            $("#user-info").css("display", "none");
+            $("#review-box button").before(
+                '<a href="javascript:void(0)" id="change-info" class="btn btn-primary me-1">change info</a>'
+            );
+        }
     }
 });
 
@@ -231,7 +218,8 @@ $("#user-info form span").click(function () {
 });
 
 function showformreply(id) {
-    $(".reply-list[id='r" + id + "'] form").remove();
+    $(".inputreply form").css("display", "none");
+    $(".inputchildreply").remove();
     $("form#r" + id).css("display", "block");
     let reviewer = $(".review[data-id=" + id + "] > strong > span.name").text();
     $("form#r" + id + " textarea").val("@" + reviewer + ": ");
@@ -244,6 +232,10 @@ function closereplyform(btn) {
 
 /*----------- reply review -----------*/
 function sendreply(id) {
+    if (!checkCookie("name")) {
+        $("#user-info").css("display", "flex");
+        return;
+    }
     let reply_content = $(
         "form[id=r" + id + "] textarea[name='reply_content']"
     ).val();
@@ -275,6 +267,7 @@ function sendreply(id) {
 /*------------ child reply -----------*/
 $(document).on("click", ".child-reply-btn", function () {
     $(".inputchildreply").remove();
+    $(".inputreply form").css("display", "none");
     let product_id = $(this).parent().data("product");
     let reply_id = $(this).parent().data("id");
     let replier = $(
@@ -317,6 +310,10 @@ $(document).on("click", ".child-reply-btn", function () {
 });
 
 $(document).on("click", ".child-reply-send", function () {
+    if (!checkCookie("name")) {
+        $("#user-info").css("display", "flex");
+        return;
+    }
     let reply_id = $(this).data("id");
     let product_id = $("form#" + reply_id + " input[name='product_id']").val();
     let _token = $("#user-info input[name='_token']").val();
@@ -353,16 +350,20 @@ $(document).on("click", "#change-info", function () {
     $("#user-info form input[name='phone_number']").val(phone_number);
     $("#user-info form button").text("Change");
     $("#user-info form button").attr("id", "change-act");
-    $("#user-info").css("display", "block");
+    $("#user-info").css("display", "flex");
 });
 
 $(document).on("click", "#change-act", function (e) {
     e.preventDefault();
-    let name = $("#user-info form input[name='name']").val();
-    let email = $("#user-info form input[name='email']").val();
-    let phone_number = $("#user-info form input[name='phone_number']").val();
-    setCookie("name", name, 1);
-    setCookie("email", email, 1);
-    setCookie("phone", phone_number, 1);
-    $("#user-info").css("display", "none");
+    if ($("#user-info form").valid()) {
+        let name = $("#user-info form input[name='name']").val();
+        let email = $("#user-info form input[name='email']").val();
+        let phone_number = $(
+            "#user-info form input[name='phone_number']"
+        ).val();
+        setCookie("name", name, 1);
+        setCookie("email", email, 1);
+        setCookie("phone", phone_number, 1);
+        $("#user-info").css("display", "none");
+    }
 });
